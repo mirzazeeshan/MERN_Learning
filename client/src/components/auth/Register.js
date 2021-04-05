@@ -1,12 +1,12 @@
 import React, {Fragment, useState} from "react";
 import {connect} from "react-redux";
 // import axios from 'axios';
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {setAlert} from "../../actions/alert";
 import {register} from "../../actions/auth";
 import PropTypes from 'prop-types';
 
-const Register = ({setAlert, register}) => {
+const Register = ({setAlert, register}, isAuthenticated) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -51,6 +51,11 @@ const Register = ({setAlert, register}) => {
     }
   };
 
+  //Redirect if logged in
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard"/>
+  }
+
   return (
     <Fragment>
       <h1 className="large text-primary">Sign Up</h1>
@@ -61,7 +66,7 @@ const Register = ({setAlert, register}) => {
         </div>
         <div className="form-group">
           <input type="email" placeholder="Email Address" name="email" value={email} onChange={e => onChange(e)}
-                 required />
+                 required/>
           <small className="form-text"
           >This site uses Gravatar so if you want a profile image, use a
             Gravatar email</small>
@@ -85,7 +90,13 @@ const Register = ({setAlert, register}) => {
 
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
 };
 
-export default connect(null, {setAlert, register})(Register);
+const mapSateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
+
+export default connect(mapSateToProps, {setAlert, register})(Register);
